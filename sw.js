@@ -1,22 +1,28 @@
 // Service Worker for PWA - handles file sharing
-const CACHE = 'fault-tool-v1';
-const PREFIX = self.location.pathname.replace(/[^\/]*$/, '') || '';
+const CACHE = 'fault-tool-v2';
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll([
-      PREFIX + '/fault-tool.html',
-      PREFIX + '/fault_codes.json',
-      PREFIX + '/dbc_signals.json',
-      PREFIX + '/can_mapping.json',
-      PREFIX + '/manifest.json'
+      './fault-tool.html',
+      './fault_codes.json',
+      './dbc_signals.json',
+      './can_mapping.json',
+      './manifest.json'
     ]))
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+  // 清理旧缓存
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', event => {
@@ -39,7 +45,7 @@ async function handleSharedFile(request) {
     const formData = await request.formData();
     const file = formData.get('ascFile');
     if (!file) {
-      return Response.redirect(PREFIX + '/fault-tool.html?shared=no-file', 303);
+      return Response.redirect('./fault-tool.html?shared=no-file', 303);
     }
 
     // Store file in cache for the main page to read
@@ -55,7 +61,7 @@ async function handleSharedFile(request) {
         size: file.size
       });
       await target.focus();
-      return Response.redirect(PREFIX + '/fault-tool.html', 303);
+      return Response.redirect('./fault-tool.html', 303);
     }
 
     // No existing client, store and redirect
@@ -68,10 +74,10 @@ async function handleSharedFile(request) {
       timestamp: Date.now()
     })));
 
-    return Response.redirect(PREFIX + '/fault-tool.html?shared=1&name=' + encodeURIComponent(file.name), 303);
+    return Response.redirect('./fault-tool.html?shared=1&name=' + encodeURIComponent(file.name), 303);
   } catch (err) {
     console.error('Share handler error:', err);
-    return Response.redirect(PREFIX + '/fault-tool.html?shared=error', 303);
+    return Response.redirect('./fault-tool.html?shared=error', 303);
   }
 }
 
