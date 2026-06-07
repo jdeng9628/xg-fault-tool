@@ -226,7 +226,7 @@ async function doLogin() {
     sessionStorage.setItem('fault_tool_user', u);
     // Remember password
     if (document.getElementById('rememberPwd').checked) {
-      localStorage.setItem('fault_tool_remember', JSON.stringify({user: u, hash: hash, expiry: Date.now() + 30*86400000}));
+      localStorage.setItem('fault_tool_remember', JSON.stringify({user: u, hash: hash}));
     }
   } else {
     err.textContent = '用户名或密码错误';
@@ -312,12 +312,12 @@ function processFile(file) {
     document.getElementById('userDisplay').textContent = saved;
     return;
   }
-  // 2. Try localStorage remembered credentials (valid for 30 days)
+  // 2. Try localStorage remembered credentials
   const remembered = localStorage.getItem('fault_tool_remember');
   if (remembered) {
     try {
       const cred = JSON.parse(remembered);
-      if (cred.expiry && cred.expiry > Date.now()) {
+      if (cred.user && cred.hash) {
         const expected = USER_HASHES[cred.user.toLowerCase()];
         if (expected && cred.hash === expected) {
           document.getElementById('loginOverlay').style.display = 'none';
