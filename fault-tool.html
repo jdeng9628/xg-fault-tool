@@ -118,6 +118,7 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#f1f5f9;m
 <div class="nav">
   <h2>车辆故障码查询系统</h2>
   <div class="right">
+    <button id="btnInstall" style="display:none;background:#059669;color:#fff;margin-right:8px" onclick="doInstall()">📥 安装到桌面</button>
     <span class="user" id="userDisplay"></span>
     <button onclick="doLogout()">退出登录</button>
   </div>
@@ -171,6 +172,40 @@ body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#f1f5f9;m
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
+// ==================== PWA INSTALL ====================
+let deferredPrompt = null;
+
+// Capture the install prompt event
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('btnInstall');
+  if (btn) btn.style.display = 'inline-block';
+});
+
+// Handle install button click
+async function doInstall() {
+  const btn = document.getElementById('btnInstall');
+  if (!deferredPrompt) {
+    alert('当前浏览器不支持自动安装，请使用浏览器菜单中的"安装应用"功能。');
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    console.log('User accepted PWA install');
+  }
+  deferredPrompt = null;
+  if (btn) btn.style.display = 'none';
+}
+
+// Hide install button if already installed
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('btnInstall');
+  if (btn) btn.style.display = 'none';
+  deferredPrompt = null;
+});
+
 // ==================== AUTH ====================
 const USER_HASHES = {
   'admin': '6ca4587e3e4519a2f10037157afc67bf4fe0f45925949f25dd517330be1b7b73',
