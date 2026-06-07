@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>车辆故障码查询系统</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="故障码查询">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3b82f6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<link rel="manifest" href="./manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#f1f5f9;min-height:100vh;color:#1e293b}
+
+/* Login */
+.login-overlay{position:fixed;inset:0;background:#0f172a;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.login-box{background:#1e293b;border-radius:16px;padding:40px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.login-box h2{color:#f1f5f9;font-size:22px;text-align:center;margin-bottom:8px}
+.login-box .sub{color:#64748b;text-align:center;font-size:13px;margin-bottom:28px}
+.login-box label{color:#94a3b8;font-size:13px;display:block;margin-bottom:6px}
+.login-box input{width:100%;padding:10px 14px;border:1px solid #334155;border-radius:8px;background:#0f172a;color:#f1f5f9;font-size:14px;margin-bottom:16px;outline:none}
+.login-box input:focus{border-color:#3b82f6}
+.login-box button{width:100%;padding:11px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer}
+.login-box button:hover{background:#2563eb}
+.login-box .remember-label{display:flex;align-items:center;gap:6px;color:#94a3b8;font-size:12px;margin-bottom:16px;cursor:pointer;user-select:none}
+.login-box .remember-label input{width:auto;margin:0}
+.login-box .err{color:#ef4444;font-size:12px;text-align:center;margin-top:10px;min-height:18px}
+
+/* Nav */
+.nav{background:#1e293b;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;color:#f1f5f9}
+.nav h2{font-size:18px}
+.nav .right{display:flex;align-items:center;gap:16px}
+.nav .user{color:#94a3b8;font-size:14px}
+.nav button{background:#334155;color:#e2e8f0;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+.nav button:hover{background:#475569}
+
+.container{max-width:1400px;margin:0 auto;padding:24px}
+
+/* Upload */
+.upload-zone{border:2px dashed #94a3b8;border-radius:12px;padding:40px;text-align:center;background:#fff;cursor:pointer;transition:all .2s;margin-bottom:24px}
+.upload-zone:hover,.upload-zone.dragover{border-color:#3b82f6;background:#eff6ff}
+.upload-zone .icon{font-size:48px;margin-bottom:12px}
+.upload-zone p{color:#64748b;font-size:15px}
+.upload-zone .hint{color:#94a3b8;font-size:12px;margin-top:4px}
+.upload-zone input{display:none}
+
+.progress-bar{display:none;background:#e2e8f0;border-radius:8px;height:6px;margin-bottom:12px;overflow:hidden}
+.progress-bar .fill{height:100%;background:#3b82f6;width:0;transition:width .3s;border-radius:8px}
+.progress-text{display:none;text-align:center;color:#64748b;font-size:13px;margin-bottom:16px}
+
+/* Stats */
+.stats{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.stat-card{background:#fff;border-radius:10px;padding:16px 24px;flex:1;min-width:150px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-card .num{font-size:28px;font-weight:700;color:#1e293b}
+.stat-card .label{font-size:13px;color:#64748b;margin-top:4px}
+
+/* Filter */
+.filter-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.ecu-chip{padding:6px 14px;border-radius:20px;border:1px solid #cbd5e1;cursor:pointer;font-size:13px;background:#fff;transition:all .15s;white-space:nowrap}
+.ecu-chip:hover{border-color:#3b82f6;color:#3b82f6}
+.ecu-chip.active{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.level-chips{display:flex;gap:8px;margin-left:16px}
+.level-chip{padding:4px 12px;border-radius:12px;border:1px solid #cbd5e1;cursor:pointer;font-size:12px;background:#fff;transition:all .15s}
+.level-chip:hover{border-color:#ef4444}
+.level-chip.active.l3{background:#f97316;color:#fff;border-color:#f97316}
+.level-chip.active.l2{background:#eab308;color:#fff;border-color:#eab308}
+.level-chip.active.l1{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.level-chip.active.l0{background:#94a3b8;color:#fff;border-color:#94a3b8}
+.search-box{display:flex;gap:8px;margin-left:auto}
+.search-box input{padding:6px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;width:180px;outline:none}
+.search-box input:focus{border-color:#3b82f6}
+.btn-export{padding:8px 18px;background:#059669;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.btn-export:hover{background:#047857}
+
+/* Table */
+.result-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:16px}
+.result-table th{background:#f8fafc;padding:10px 12px;text-align:left;font-size:13px;color:#475569;font-weight:600;border-bottom:2px solid #e2e8f0;white-space:nowrap}
+.result-table td{padding:10px 12px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
+.result-table tr:hover td{background:#f8fafc}
+.result-table .l3{color:#f97316;font-weight:700}
+.result-table .l2{color:#eab308;font-weight:700}
+.result-table .l1{color:#3b82f6;font-weight:700}
+.result-table .l0{color:#94a3b8}
+
+.pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px}
+.pagination button{padding:6px 12px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;font-size:13px}
+.pagination button:hover{background:#f1f5f9}
+.pagination button:disabled{opacity:.4;cursor:default}
+.pagination .page-info{font-size:13px;color:#64748b}
+
+.empty-state{text-align:center;padding:80px 20px;color:#94a3b8}
+.empty-state .icon{font-size:64px;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>车辆故障码查询系统</h2>
+    <div class="sub">请输入授权账户登录</div>
+    <label>用户名</label>
+    <input type="text" id="loginUser" placeholder="请输入用户名" autocomplete="username">
+    <label>密码</label>
+    <input type="password" id="loginPass" placeholder="请输入密码" autocomplete="current-password">
+    <label class="remember-label"><input type="checkbox" id="rememberPwd"> 记住密码（30天内自动登录）</label>
+    <button onclick="doLogin()">登 录</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- Main App (hidden until login) -->
+<div id="mainApp" style="display:none">
+<div class="nav">
+  <h2>车辆故障码查询系统</h2>
+  <div class="right">
+    <span class="user" id="userDisplay"></span>
+    <button onclick="doLogout()">退出登录</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+       ondragover="event.preventDefault();this.classList.add('dragover')"
+       ondragleave="this.classList.remove('dragover')"
+       ondrop="onDrop(event)">
+    <div class="icon">📁</div>
+    <p>点击上传或拖拽 .asc / .zip 文件到此处</p>
+    <div class="hint">支持单个 .asc 文件或包含 .asc 文件的 ZIP 压缩包</div>
+    <input type="file" id="fileInput" accept=".asc,.zip" onchange="handleFile(event)">
+  </div>
+  <div class="progress-bar" id="progressBar"><div class="fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText"></div>
+
+  <div id="statsArea" class="stats" style="display:none">
+    <div class="stat-card"><div class="num" id="statFiles">0</div><div class="label">ASC文件数</div></div>
+    <div class="stat-card"><div class="num" id="statEvents">0</div><div class="label">故障事件总数</div></div>
+    <div class="stat-card"><div class="num" id="statUnique">0</div><div class="label">故障类型数</div></div>
+    <div class="stat-card"><button class="btn-export" onclick="location.reload()">🔄 重新上传</button></div>
+  </div>
+
+  <div id="resultArea" style="display:none">
+    <div class="filter-bar">
+      <span style="font-size:13px;color:#64748b;white-space:nowrap">ECU筛选:</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="ecuChips"></div>
+      <div class="level-chips" id="levelChips"></div>
+      <div class="search-box"><input type="text" id="searchInput" placeholder="搜索故障描述..." oninput="applyFilters()"></div>
+      <button class="btn-export" onclick="exportCSV()">📥 导出CSV</button>
+    </div>
+    <table class="result-table" id="resultTable">
+      <thead><tr>
+        <th>ECU</th><th>故障码</th><th>等级</th><th>故障描述</th><th>出现次数</th><th>首次时间</th><th>末次时间</th><th>持续时长</th>
+      </tr></thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    <div class="icon">📊</div>
+    <p>上传 ASC 文件开始分析</p>
+  </div>
+</div>
+</div>
+
+<!-- JSZip CDN for ZIP support -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+// ==================== AUTH ====================
+const USER_HASHES = {
+  'admin': '6ca4587e3e4519a2f10037157afc67bf4fe0f45925949f25dd517330be1b7b73',
+  'engineer': 'cae8b9720fbe2c8f9647f3ea4a03172760102b981c7acfc705ea4a3bd301be65'
+};
+
+function sha256(msg) {
+  function rotr(x,n){return(x>>>n)|(x<<(32-n));}
+  function ch(x,y,z){return(x&y)^(~x&z);}
+  function maj(x,y,z){return(x&y)^(x&z)^(y&z);}
+  function S0(x){return rotr(x,2)^rotr(x,13)^rotr(x,22);}
+  function S1(x){return rotr(x,6)^rotr(x,11)^rotr(x,25);}
+  function s0(x){return rotr(x,7)^rotr(x,18)^(x>>>3);}
+  function s1(x){return rotr(x,17)^rotr(x,19)^(x>>>10);}
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const bytes=new TextEncoder().encode(msg);
+  const ml=bytes.length*8;
+  const pl=(56-(bytes.length+1)%64+64)%64;
+  const tl=bytes.length+1+pl+8;
+  const p=new Uint8Array(tl);
+  p.set(bytes);p[bytes.length]=0x80;
+  new DataView(p.buffer).setUint32(tl-4,ml,false);
+  // read big-endian words from padded message
+  const dv=new DataView(p.buffer);
+  const numBlocks=tl/64;
+  let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a;
+  let h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
+  for(let bi=0;bi<numBlocks;bi++){
+    const M=new Uint32Array(64);
+    const off=bi*64;
+    for(let j=0;j<16;j++)M[j]=dv.getUint32(off+j*4,false);
+    for(let j=16;j<64;j++)M[j]=(s1(M[j-2])+M[j-7]+s0(M[j-15])+M[j-16])>>>0;
+    let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;
+    for(let j=0;j<64;j++){const t1=(h+S1(e)+ch(e,f,g)+K[j]+M[j])>>>0;const t2=(S0(a)+maj(a,b,c))>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;}
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;
+    h4=(h4+e)>>>0;h5=(h5+f)>>>0;h6=(h6+g)>>>0;h7=(h7+h)>>>0;
+  }
+  return [h0,h1,h2,h3,h4,h5,h6,h7].map(v=>v.toString(16).padStart(8,'0')).join('');
+}
+
+async function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  err.textContent = '';
+  if (!u || !p) { err.textContent = '请输入用户名和密码'; return; }
+  const hash = sha256(p);
+  const expected = USER_HASHES[u.toLowerCase()];
+  if (expected && hash === expected) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userDisplay').textContent = u;
+    sessionStorage.setItem('fault_tool_user', u);
+    // Remember password
+    if (document.getElementById('rememberPwd').checked) {
+      localStorage.setItem('fault_tool_remember', JSON.stringify({user: u, hash: hash, expiry: Date.now() + 30*86400000}));
+    }
+  } else {
+    err.textContent = '用户名或密码错误';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('fault_tool_user');
+  localStorage.removeItem('fault_tool_remember');
+  location.reload();
+}
+
+// ==================== PWA / SERVICE WORKER ====================
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    console.log('SW registered:', reg.scope);
+  }).catch(err => console.warn('SW register failed:', err));
+
+  // Listen for shared files from service worker
+  navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data && event.data.type === 'shared-file') {
+      const { name, data, size } = event.data;
+      const blob = new Blob([new Uint8Array(data)], { type: 'text/plain' });
+      const file = new File([blob], name, { type: 'text/plain' });
+      processFile(file);
+    }
+  });
+}
+
+// Handle files opened via File Handler API (desktop PWA)
+if ('launchQueue' in window) {
+  launchQueue.setConsumer(async params => {
+    if (params.files && params.files.length) {
+      const handle = params.files[0];
+      const file = await handle.getFile();
+      processFile(file);
+    }
+  });
+}
+
+// ==================== SHARED FILE HANDLING ====================
+// Check URL for shared file flag
+(function checkSharedFile() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('shared') === '1') {
+    const fname = params.get('name') || 'shared.asc';
+    // Request file data from service worker
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: 'get-shared-file' });
+    }
+    // Clean URL
+    window.history.replaceState({}, '', './fault-tool.html');
+  }
+})();
+
+// Process a file object (from share, drag, or file input)
+function processFile(file) {
+  // Wait for login and data loading
+  const tryProcess = () => {
+    const loggedIn = !document.getElementById('loginOverlay') || 
+                     document.getElementById('loginOverlay').style.display === 'none';
+    if (loggedIn && DBC_SIGNALS && FAULT_CODES) {
+      // Set file to input and trigger parse
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById('fileInput').files = dt.files;
+      handleFile({ target: document.getElementById('fileInput') });
+    } else {
+      setTimeout(tryProcess, 200);
+    }
+  };
+  tryProcess();
+}
+
+// Auto-login check
+(async function() {
+  // 1. Try sessionStorage first (current session)
+  let saved = sessionStorage.getItem('fault_tool_user');
+  if (saved) {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('userDisplay').textContent = saved;
+    return;
+  }
+  // 2. Try localStorage remembered credentials (valid for 30 days)
+  const remembered = localStorage.getItem('fault_tool_remember');
+  if (remembered) {
+    try {
+      const cred = JSON.parse(remembered);
+      if (cred.expiry && cred.expiry > Date.now()) {
+        const expected = USER_HASHES[cred.user.toLowerCase()];
+        if (expected && cred.hash === expected) {
+          document.getElementById('loginOverlay').style.display = 'none';
+          document.getElementById('mainApp').style.display = 'block';
+          document.getElementById('userDisplay').textContent = cred.user;
+          sessionStorage.setItem('fault_tool_user', cred.user);
+          return;
+        }
+      }
+    } catch(e) {}
+    // Credential invalid → clear it
+    localStorage.removeItem('fault_tool_remember');
+  }
+  // Enter key to login
+  document.getElementById('loginPass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+})();
+
+// ==================== DATA LOADING ====================
+let DBC_SIGNALS = null;
+let FAULT_CODES = null;
+
+async function loadData() {
+  const noCache = '?v=' + Date.now();
+  const [dbcRes, fcRes] = await Promise.all([
+    fetch('dbc_signals.json' + noCache),
+    fetch('fault_codes.json' + noCache)
+  ]);
+  DBC_SIGNALS = await dbcRes.json();
+  FAULT_CODES = await fcRes.json();
+}
+loadData();
+
+// ==================== SIGNAL EXTRACTION ====================
+function extractSignal(data, sig) {
+  // data: Uint8Array(8), sig: {start, length, byte_order, is_signed, scale, offset}
+  let value = 0;
+  for (let i = 0; i < sig.length; i++) {
+    let pos;
+    if (sig.byte_order === 'little_endian') {
+      pos = sig.start + i;
+    } else {
+      // Motorola/big_endian: start at MSB, traverse downwards within byte, then to next byte
+      const byte = Math.floor(sig.start / 8);
+      const bit = sig.start % 8;
+      const q = Math.floor(i / 8);
+      const r = i % 8;
+      const targetByte = byte + q;
+      const targetBit = bit - r;
+      pos = targetBit >= 0 ? targetByte * 8 + targetBit : (targetByte - 1) * 8 + (8 + targetBit);
+    }
+    const byteIdx = Math.floor(pos / 8);
+    const bitIdx = pos % 8;
+    if (byteIdx >= 0 && byteIdx < data.length && (data[byteIdx] & (1 << bitIdx))) {
+      // For big_endian, pos[i] goes MSB→LSB, so MSB maps to highest result bit
+      value |= (1 << (sig.byte_order === 'big_endian' ? (sig.length - 1 - i) : i));
+    }
+  }
+  if (sig.is_signed && value & (1 << (sig.length - 1))) {
+    value = value - (1 << sig.length);
+  }
+  return value * sig.scale + sig.offset;
+}
+
+// ==================== FAULT EXTRACTION ====================
+function extractFaults(ascText, progressCallback) {
+  const faults = [];
+  const mcuLevels = { MCU1: 0, MCU2: 0, MCU1_OTA: 0, MCU2_OTA: 0 };
+  const lines = ascText.split('\n');
+  const totalLines = lines.length;
+  let lineIdx = 0;
+  let lastReport = 0;
+
+  const canidLookup = {};
+  for (const [key, val] of Object.entries(DBC_SIGNALS.standard_handlers)) {
+    canidLookup[key] = { type: 'standard', ...val };
+  }
+  for (const [key, val] of Object.entries(DBC_SIGNALS.mcu_code_handlers)) {
+    canidLookup[key] = { type: 'mcu_code', ...val };
+  }
+  for (const [key, val] of Object.entries(DBC_SIGNALS.mcu_lvl_handlers)) {
+    canidLookup[key] = { type: 'mcu_lvl', ...val };
+  }
+
+  for (const line of lines) {
+    lineIdx++;
+    if (progressCallback && lineIdx - lastReport >= 20000) {
+      lastReport = lineIdx;
+      progressCallback(lineIdx, totalLines);
+    }
+    // Manual parse (same logic as parseAscLines)
+    if (!line || !line[0] || line[0] < '0' || line[0] > '9') continue;
+    const parts = line.split(/\s+/);
+    if (parts.length < 6) continue;
+    let canid, data, timestamp;
+    try {
+      const canidRaw = parts[2];
+      if (!canidRaw.endsWith('x')) continue;
+      canid = parseInt(canidRaw.slice(0, -1), 16);
+      timestamp = parseFloat(parts[0]);
+      const dlc = parseInt(parts[5]);
+      data = new Uint8Array(8);
+      for (let j = 0; j < dlc && (6 + j) < parts.length; j++) {
+        data[j] = parseInt(parts[6 + j], 16);
+      }
+    } catch(e) { continue; }
+
+    const handler = canidLookup[canid];
+    if (!handler) continue;
+
+    // MCU level messages
+    if (handler.type === 'mcu_lvl') {
+      try {
+        const lvl = parseInt(extractSignal(data, handler.level_sig)) || 0;
+        for (const [cid, meta] of Object.entries(DBC_SIGNALS.mcu_meta)) {
+          if (meta.level_cid == canid) {
+            mcuLevels[meta.motor_tag] = lvl;
+          }
+        }
+      } catch(e) {}
+      continue;
+    }
+
+    // MCU code messages
+    if (handler.type === 'mcu_code') {
+      const meta = DBC_SIGNALS.mcu_meta[canid];
+      if (!meta) continue;
+      try {
+        const code = parseInt(extractSignal(data, handler.code_sig)) || 0;
+        if (code === 0) continue;
+        const lvl = mcuLevels[meta.motor_tag] || 0;
+        const { desc, level } = lookupFault(meta.dict_key, code, lvl);
+        faults.push({
+          ecu_name: meta.display,
+          ecu_key: meta.dict_key,
+          ecu_cn: getCName(meta.display),
+          fault_code: code,
+          description: desc,
+          level: level,
+          level_name: LEVEL_NAMES[level] || ('L' + level),
+          timestamp: timestamp,
+        });
+      } catch(e) {}
+      continue;
+    }
+
+    // Standard handlers
+    if (handler.type === 'standard') {
+      if (handler.dict_key === 'CMC') continue;
+      try {
+        const code = parseInt(extractSignal(data, handler.code_sig)) || 0;
+        if (code === 0) continue;
+        let lvl = 0;
+        if (handler.level_sig) {
+          lvl = parseInt(extractSignal(data, handler.level_sig)) || 0;
+        }
+        const { desc, level } = lookupFault(handler.dict_key, code, lvl);
+        faults.push({
+          ecu_name: handler.display,
+          ecu_key: handler.dict_key,
+          ecu_cn: getCName(handler.display),
+          fault_code: code,
+          description: desc,
+          level: level,
+          level_name: LEVEL_NAMES[level] || ('L' + level),
+          timestamp: timestamp,
+        });
+      } catch(e) {}
+    }
+  }
+
+  if (progressCallback) progressCallback(lineIdx, totalLines);
+  return faults;
+}
+
+function getCName(display) {
+  const m = display.match(/^(.+?)\s*\((.+)\)$/);
+  return m ? m[2] + '(' + m[1] + ')' : display;
+}
+
+const LEVEL_NAMES = { 0: '未定义', 1: '一级故障', 2: '二级故障', 3: '三级故障' };
+
+function lookupFault(ecuShort, code, dbcLevel) {
+  let desc = dbcLevel > 0 ? `未知故障码(L${dbcLevel})` : '未知故障码';
+  let level = dbcLevel;
+  if (FAULT_CODES && FAULT_CODES[ecuShort] && FAULT_CODES[ecuShort][String(code)]) {
+    const info = FAULT_CODES[ecuShort][String(code)];
+    desc = info.desc || desc;
+    if (dbcLevel === 0 && info.level !== undefined) {
+      level = info.level;
+    }
+  }
+  return { desc, level };
+}
+
+// ==================== FILE HANDLING ====================
+let allResults = [];
+let ecuFilter = new Set();
+let levelFilter = new Set();
+let currentPage = 1;
+const pageSize = 20;
+
+async function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!DBC_SIGNALS || !FAULT_CODES) { alert('数据加载中，请稍后再试'); return; }
+
+  const zone = document.getElementById('uploadZone');
+  const pb = document.getElementById('progressBar');
+  const pf = document.getElementById('progressFill');
+  const pt = document.getElementById('progressText');
+
+  zone.querySelector('p').textContent = '正在读取: ' + file.name;
+  zone.querySelector('.hint').textContent = '';
+  pb.style.display = 'block';
+  pt.style.display = 'block';
+  pf.style.width = '0%';
+  pt.textContent = '读取文件中...';
+
+  try {
+    let ascFiles = [];
+
+    if (file.name.toLowerCase().endsWith('.zip')) {
+      if (typeof JSZip === 'undefined') { alert('ZIP解压库加载失败，请检查网络连接或直接上传 .asc 文件'); resetZone(); return; }
+      pt.textContent = '解压 ZIP 文件中...';
+      const zip = await JSZip.loadAsync(file);
+      for (const [name, zf] of Object.entries(zip.files)) {
+        if (zf.dir) continue;
+        if (name.toLowerCase().endsWith('.asc')) {
+          const text = await zf.async('string');
+          ascFiles.push({ name, text });
+        }
+      }
+    } else {
+      // Read as Latin-1 to handle possible non-UTF8 ASC files (CAN data is ASCII)
+      const text = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsText(file, 'ISO-8859-1');
+      });
+      ascFiles.push({ name: file.name, text });
+    }
+
+    if (ascFiles.length === 0) { alert('未找到 .asc 文件'); resetZone(); return; }
+
+    pt.textContent = '解析中...';
+    zone.querySelector('p').textContent = '正在解析: ' + file.name;
+    zone.querySelector('.hint').textContent = '已找到 ' + ascFiles.length + ' 个ASC文件';
+
+    // Process with yield to UI
+    setTimeout(() => runAnalysis(ascFiles, file.name, ascFiles.length), 50);
+
+  } catch(err) {
+    alert('读取失败: ' + err.message);
+    resetZone();
+  }
+}
+
+function runAnalysis(ascFiles, uploadName, ascCount) {
+  const pb = document.getElementById('progressBar');
+  const pf = document.getElementById('progressFill');
+  const pt = document.getElementById('progressText');
+  let allFaults = [];
+  let totalLinesAcrossFiles = 0;
+  let processedAcrossFiles = 0;
+
+  // Count total lines first (fast, just split length)
+  ascFiles.forEach(af => { totalLinesAcrossFiles += af.text.split('\n').length; });
+
+  function processNext(idx) {
+    if (idx >= ascFiles.length) {
+      pf.style.width = '100%';
+      pt.textContent = '解析完成，汇总中...';
+      setTimeout(() => aggregateResults(allFaults, ascCount), 20);
+      return;
+    }
+    const af = ascFiles[idx];
+    pt.textContent = '解析: ' + af.name + '...';
+    const startOffset = processedAcrossFiles;
+
+    const faults = extractFaults(af.text, (processedThisFile, totalThisFile) => {
+      processedAcrossFiles = startOffset + processedThisFile;
+      const pct = totalLinesAcrossFiles > 0 ? Math.min(99, Math.round(processedAcrossFiles / totalLinesAcrossFiles * 100)) : 0;
+      pf.style.width = pct + '%';
+      pt.textContent = '解析中... ' + pct + '% (' + af.name + ')';
+    });
+
+    allFaults = allFaults.concat(faults);
+    processedAcrossFiles = startOffset + (af.text.split('\n').length);
+    setTimeout(() => processNext(idx + 1), 10);
+  }
+
+  processNext(0);
+}
+
+function aggregateResults(allFaults, ascCount) {
+  const pb = document.getElementById('progressBar');
+  const pt = document.getElementById('progressText');
+  const pf = document.getElementById('progressFill');
+  pt.textContent = '汇总结果中...';
+
+  const aggregated = {};
+  for (const f of allFaults) {
+    const key = f.ecu_name + '|' + f.fault_code + '|' + f.description;
+    if (!aggregated[key]) {
+      aggregated[key] = {
+        ecu_name: f.ecu_name,
+        ecu_key: f.ecu_key,
+        ecu_cn: f.ecu_cn,
+        fault_code: f.fault_code,
+        description: f.description,
+        level: f.level,
+        level_name: f.level_name,
+        count: 0,
+        first_time: f.timestamp,
+        last_time: f.timestamp,
+      };
+    }
+    const agg = aggregated[key];
+    agg.count++;
+    agg.first_time = Math.min(agg.first_time, f.timestamp);
+    agg.last_time = Math.max(agg.last_time, f.timestamp);
+  }
+
+  allResults = Object.values(aggregated);
+  // 按 ECU 名称排序，同 ECU 内按等级降序，等级相同按次数降序
+  allResults.sort((a, b) => {
+    const ecuCmp = a.ecu_cn.localeCompare(b.ecu_cn, 'zh-CN');
+    if (ecuCmp !== 0) return ecuCmp;
+    const al = a.level > 0 ? a.level : 99;
+    const bl = b.level > 0 ? b.level : 99;
+    if (al !== bl) return bl - al;
+    return b.count - a.count;
+  });
+
+  // Update UI
+  document.getElementById('uploadZone').style.display = 'none';
+  pf.style.width = '100%';
+  pt.textContent = '解析完成！共 ' + allFaults.length.toLocaleString() + ' 个故障事件，' + allResults.length + ' 种故障类型';
+  setTimeout(() => { pb.style.display = 'none'; pt.style.display = 'none'; }, 2000);
+
+  updateUI(allFaults.length, allResults.length, ascCount);
+}
+
+function updateUI(totalEvents, uniqueFaults, ascCount) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('statsArea').style.display = 'flex';
+  document.getElementById('resultArea').style.display = 'block';
+  document.getElementById('statFiles').textContent = ascCount;
+  document.getElementById('statEvents').textContent = totalEvents;
+  document.getElementById('statUnique').textContent = uniqueFaults;
+
+  // Build ECU filter chips
+  const ecuMap = new Map();
+  allResults.forEach(r => { if (!ecuMap.has(r.ecu_key)) ecuMap.set(r.ecu_key, r.ecu_cn); });
+  const chipsDiv = document.getElementById('ecuChips');
+  chipsDiv.innerHTML = '';
+  ecuMap.forEach((cn, key) => {
+    const chip = document.createElement('span');
+    chip.className = 'ecu-chip active';
+    chip.textContent = cn;
+    chip.onclick = () => {
+      chip.classList.toggle('active');
+      if (chip.classList.contains('active')) ecuFilter.add(key); else ecuFilter.delete(key);
+      applyFilters();
+    };
+    chipsDiv.appendChild(chip);
+    ecuFilter.add(key);
+  });
+
+  // Level filter chips
+  const lcDiv = document.getElementById('levelChips');
+  lcDiv.innerHTML = '';
+  const levels = [
+    { v: 3, label: '三级故障', cls: 'l3' },
+    { v: 2, label: '二级故障', cls: 'l2' },
+    { v: 1, label: '一级故障', cls: 'l1' },
+    { v: 0, label: '未定义', cls: 'l0' },
+  ];
+  levels.forEach(l => {
+    const chip = document.createElement('span');
+    chip.className = 'level-chip active ' + l.cls;
+    chip.textContent = l.label;
+    chip.onclick = () => {
+      chip.classList.toggle('active');
+      if (chip.classList.contains('active')) levelFilter.add(l.v); else levelFilter.delete(l.v);
+      applyFilters();
+    };
+    lcDiv.appendChild(chip);
+    levelFilter.add(l.v);
+  });
+
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  let filtered = allResults.filter(r => ecuFilter.has(r.ecu_key) && levelFilter.has(r.level));
+  if (search) filtered = filtered.filter(r => r.description.toLowerCase().includes(search));
+
+  currentPage = 1;
+  renderPage(filtered);
+}
+
+function renderPage(filtered) {
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const start = (currentPage - 1) * pageSize;
+  const page = filtered.slice(start, start + pageSize);
+
+  const tbody = document.getElementById('resultBody');
+  tbody.innerHTML = page.map(r => {
+    const lvlClass = r.level >= 3 ? 'l3' : r.level >= 2 ? 'l2' : r.level >= 1 ? 'l1' : 'l0';
+    return `<tr>
+      <td>${r.ecu_cn}</td>
+      <td>${r.fault_code}</td>
+      <td class="${lvlClass}">${r.level_name}</td>
+      <td>${r.description}</td>
+      <td>${r.count}</td>
+      <td>${r.first_time.toFixed(3)}s</td>
+      <td>${r.last_time.toFixed(3)}s</td>
+      <td>${(r.last_time - r.first_time).toFixed(3)}s</td>
+    </tr>`;
+  }).join('');
+
+  // Pagination
+  const pg = document.getElementById('pagination');
+  pg.innerHTML = `
+    <button onclick="changePage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>上一页</button>
+    <span class="page-info">第 ${currentPage} / ${totalPages || 1} 页 (共 ${filtered.length} 条)</span>
+    <button onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>下一页</button>
+  `;
+}
+
+function changePage(p) {
+  currentPage = p;
+  applyFilters();
+}
+
+function exportCSV() {
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  let data = allResults.filter(r => ecuFilter.has(r.ecu_key) && levelFilter.has(r.level));
+  if (search) data = data.filter(r => r.description.toLowerCase().includes(search));
+
+  const BOM = '\uFEFF';
+  let csv = BOM + 'ECU,故障码,等级,故障描述,出现次数,首次时间(s),末次时间(s),持续时长(s)\n';
+  data.forEach(r => {
+    csv += `"${r.ecu_cn}",${r.fault_code},"${r.level_name}","${r.description}",${r.count},${r.first_time.toFixed(3)},${r.last_time.toFixed(3)},${(r.last_time - r.first_time).toFixed(3)}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '故障码分析结果.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function resetZone() {
+  const z = document.getElementById('uploadZone');
+  z.querySelector('p').textContent = '点击上传或拖拽 .asc / .zip 文件到此处';
+  z.querySelector('.hint').textContent = '支持单个 .asc 文件或包含 .asc 文件的 ZIP 压缩包';
+  document.getElementById('progressBar').style.display = 'none';
+  document.getElementById('progressText').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+}
+
+function onDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  if (e.dataTransfer.files.length > 0) {
+    document.getElementById('fileInput').files = e.dataTransfer.files;
+    handleFile({ target: { files: e.dataTransfer.files } });
+  }
+}
+</script>
+</body>
+</html>

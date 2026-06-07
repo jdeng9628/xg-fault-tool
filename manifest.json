@@ -1,0 +1,43 @@
+{
+  "name": "车辆故障码查询系统",
+  "short_name": "故障码查询",
+  "description": "上传ASC文件解析车辆故障码",
+  "start_url": "./fault-tool.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "share_target": {
+    "action": "./share-handler",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "ascFile",
+          "accept": [".asc", "text/plain"]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "./fault-tool.html",
+      "accept": {
+        "text/plain": [".asc"]
+      }
+    }
+  ]
+}

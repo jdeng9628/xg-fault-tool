@@ -1,0 +1,895 @@
+{
+  "standard_handlers": {
+    "419367376": {
+      "type": "standard",
+      "code_sig": {
+        "name": "VCU_VehFltCode",
+        "start": 48,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "����������"
+      },
+      "level_sig": {
+        "name": "VCU_VehFltLvl",
+        "start": 13,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "�������ϵȼ�"
+      },
+      "ecu_short": "VCU",
+      "display": "VCU (整车控制器)",
+      "dict_key": "VCU",
+      "msg_name": "VCU_Vehicle_State"
+    },
+    "419365379": {
+      "type": "standard",
+      "code_sig": {
+        "name": "VCU_TCUFltCode",
+        "start": 48,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "TCU������"
+      },
+      "level_sig": {
+        "name": "VCU_TCUFltLvl",
+        "start": 8,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "TCU���ϵȼ�"
+      },
+      "ecu_short": "TCU",
+      "display": "TCU (换挡控制器)",
+      "dict_key": "TCU",
+      "msg_name": "TCU_StateMess"
+    },
+    "419366643": {
+      "type": "standard",
+      "code_sig": {
+        "name": "BMS_FltCode",
+        "start": 16,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "BMS ������"
+      },
+      "level_sig": {
+        "name": "BMS_FltLvl",
+        "start": 4,
+        "length": 4,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 15,
+        "unit": "BMS ���ϵȼ�"
+      },
+      "ecu_short": "BMS",
+      "display": "BMS (电池管理系统)",
+      "dict_key": "BMS",
+      "msg_name": "BMS_StsMsg"
+    },
+    "419370400": {
+      "type": "standard",
+      "code_sig": {
+        "name": "DCDC_FltCode",
+        "start": 48,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "DCDC������"
+      },
+      "level_sig": {
+        "name": "DCDC_FltLvl",
+        "start": 40,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "DCDC���ϵȼ�"
+      },
+      "ecu_short": "DCDC",
+      "display": "DCDC (直流变换器)",
+      "dict_key": "DCDC",
+      "msg_name": "DCDC_State1"
+    },
+    "419370657": {
+      "type": "standard",
+      "code_sig": {
+        "name": "EPS_EltricPow_FltCode",
+        "start": 48,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "������������"
+      },
+      "level_sig": {
+        "name": "EPS_Eltric_FltLvl",
+        "start": 40,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "���������ϵȼ�"
+      },
+      "ecu_short": "EPS",
+      "display": "EPS (电动助力转向)",
+      "dict_key": "EPS",
+      "msg_name": "EPS_Controller_State1"
+    },
+    "419370665": {
+      "type": "standard",
+      "code_sig": {
+        "name": "DESP_Fault_Code",
+        "start": 56,
+        "length": 6,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "������_˫Դ��"
+      },
+      "level_sig": {
+        "name": "DESP_Fault_level",
+        "start": 62,
+        "length": 2,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "unit": "���ϵȼ�_˫Դ��"
+      },
+      "ecu_short": "DEPS",
+      "display": "DEPS (双源转向泵)",
+      "dict_key": "DEPS",
+      "msg_name": "DESP_Controler_information"
+    },
+    "419370914": {
+      "type": "standard",
+      "code_sig": {
+        "name": "EAC_AirCompre_FltCode",
+        "start": 48,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "�綯��ѹ��������"
+      },
+      "level_sig": {
+        "name": "EAC_AirCompre_FltLvl",
+        "start": 40,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 8,
+        "unit": "�綯��ѹ�����ϵȼ�"
+      },
+      "ecu_short": "EAC",
+      "display": "EAC (空调压缩机)",
+      "dict_key": "EAC",
+      "msg_name": "EAC_Controller_State1"
+    },
+    "402837719": {
+      "type": "standard",
+      "code_sig": {
+        "name": "FCU_FltCode",
+        "start": 24,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "������"
+      },
+      "level_sig": {
+        "name": "FCU_FltLvl",
+        "start": 8,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "���ϵȼ�"
+      },
+      "ecu_short": "FCU",
+      "display": "FCU (燃料电池控制器)",
+      "dict_key": "FCU",
+      "msg_name": "FCU_BaseMsg1"
+    },
+    "419414330": {
+      "type": "standard",
+      "code_sig": {
+        "name": "TMS_FltLvl",
+        "start": 61,
+        "length": 6,
+        "byte_order": "big_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 32,
+        "unit": "TMS������"
+      },
+      "level_sig": {
+        "name": "TMS_FltCode",
+        "start": 63,
+        "length": 2,
+        "byte_order": "big_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 3,
+        "unit": "TMS�ʵȼ�"
+      },
+      "ecu_short": "TMS",
+      "display": "TMS (热管理系统)",
+      "dict_key": "TMS",
+      "msg_name": "TMS_StsMsg"
+    },
+    "419304036": {
+      "type": "standard",
+      "code_sig": {
+        "name": "EPB_Fault_code",
+        "start": 8,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "������"
+      },
+      "level_sig": null,
+      "ecu_short": "EPB",
+      "display": "EPB (电子驻车)",
+      "dict_key": "EPB",
+      "msg_name": "EPB_Information"
+    },
+    "419397884": {
+      "type": "standard",
+      "code_sig": {
+        "name": "CMC_FltCode",
+        "start": 32,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "ѹ�������ϴ���"
+      },
+      "level_sig": null,
+      "ecu_short": "CMC",
+      "display": "CMC (域控)",
+      "dict_key": "CMC",
+      "msg_name": "CMC_StsMsg"
+    }
+  },
+  "mcu_code_handlers": {
+    "419369731": {
+      "msg_name": "MCU1_BaseMess3_NOTA",
+      "code_sig": {
+        "name": "VCU_DriMotFltCode1",
+        "start": 40,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "�������1������_��OTA"
+      }
+    },
+    "419373827": {
+      "msg_name": "MCU2_BaseMess3_NOTA",
+      "code_sig": {
+        "name": "VCU_DriMotFltCode2",
+        "start": 40,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "�������2������_��OTA"
+      }
+    },
+    "419369968": {
+      "msg_name": "MCU1_BaseMess3_OTA",
+      "code_sig": {
+        "name": "VCU_DriMotFltCode1",
+        "start": 40,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "�������1������_OTA"
+      }
+    },
+    "419374064": {
+      "msg_name": "MCU2_BaseMess3_OTA",
+      "code_sig": {
+        "name": "VCU_DriMotFltCode2",
+        "start": 40,
+        "length": 8,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 255,
+        "unit": "�������2������_OTA"
+      }
+    }
+  },
+  "mcu_lvl_handlers": {
+    "419369219": {
+      "msg_name": "MCU1_BaseMess1_NOTA",
+      "level_sig": {
+        "name": "VCU_MCUFltLvl1",
+        "start": 8,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "MCU1���ϵȼ�_��OTA"
+      }
+    },
+    "419373315": {
+      "msg_name": "MCU2_BaseMess1_NOTA",
+      "level_sig": {
+        "name": "VCU_MCUFltLvl2",
+        "start": 8,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "MCU2���ϵȼ�_��OTA"
+      }
+    },
+    "419369456": {
+      "msg_name": "MCU1_BaseMess1_OTA",
+      "level_sig": {
+        "name": "VCU_MCUFltLvl1",
+        "start": 8,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "MCU1���ϵȼ�_OTA"
+      }
+    },
+    "419373552": {
+      "msg_name": "MCU2_BaseMess1_OTA",
+      "level_sig": {
+        "name": "VCU_MCUFltLvl2",
+        "start": 8,
+        "length": 3,
+        "byte_order": "little_endian",
+        "is_signed": false,
+        "scale": 1,
+        "offset": 0,
+        "minimum": 0,
+        "maximum": 7,
+        "unit": "MCU2���ϵȼ�_OTA"
+      }
+    }
+  },
+  "mcu_meta": {
+    "419369731": {
+      "level_cid": 419369219,
+      "display": "MCU-电机1 (非OTA)",
+      "dict_key": "MCU",
+      "motor_tag": "MCU1"
+    },
+    "419373827": {
+      "level_cid": 419373315,
+      "display": "MCU-电机2 (非OTA)",
+      "dict_key": "MCU",
+      "motor_tag": "MCU2"
+    },
+    "419369968": {
+      "level_cid": 419369456,
+      "display": "MCU-电机1 (OTA)",
+      "dict_key": "MCU",
+      "motor_tag": "MCU1_OTA"
+    },
+    "419374064": {
+      "level_cid": 419373552,
+      "display": "MCU-电机2 (OTA)",
+      "dict_key": "MCU",
+      "motor_tag": "MCU2_OTA"
+    }
+  },
+  "bit_handlers": {
+    "419370147": {
+      "type": "bit_faults",
+      "fault_sigs": [
+        {
+          "name": "PDU_MainPosRly_FltSts",
+          "start": 2,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "�����̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_preChgRly_FltSts",
+          "start": 6,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "Ԥ��̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_PTC1Rly_FltSts",
+          "start": 10,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "PTC1 �̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_PTC2Rly_FltSts",
+          "start": 14,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "PTC2 �̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_AuxDriRly_FltSts",
+          "start": 18,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "�����̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_ACRly_FltSts",
+          "start": 22,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "�յ��̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_MotorFRly_FltSts",
+          "start": 26,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "��װ�̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_MotorpreFRly_FltSts",
+          "start": 30,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "��װԤ��̵�������״̬_PDU"
+        },
+        {
+          "name": "PDU_ACpreRly_FltSts",
+          "start": 34,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "�յ�Ԥ��̵�������״̬_PDU"
+        }
+      ],
+      "ecu_short": "PDU",
+      "display": "PDU (高压配电单元)",
+      "dict_key": "PDU",
+      "msg_name": "PDU_Relay_State"
+    },
+    "419370148": {
+      "type": "bit_faults",
+      "fault_sigs": [
+        {
+          "name": "BDU_Qchg1RlyPosFltSts",
+          "start": 10,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "���1�̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_Qchg2RlyPosFltSts",
+          "start": 14,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "���2�̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_Qchg1RlyNegFltSts",
+          "start": 18,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "���1�̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_Qchg2RlyNegFltSts",
+          "start": 22,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "���2�̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_PTC1_Relay_FaultSta",
+          "start": 26,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "PTC1 �̵�������״̬_BDU"
+        },
+        {
+          "name": "BDU_PTC2_Relay_FaultSta",
+          "start": 30,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "PTC2 �̵�������״̬_BDU"
+        },
+        {
+          "name": "BDU_BatHearRlyPosFltSts",
+          "start": 42,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "��ؼ��ȼ̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_BatHearRlyNegFltSts",
+          "start": 46,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "��ؼ��ȼ̵���������״̬_BDU"
+        },
+        {
+          "name": "BDU_SumNegRlyFltSts",
+          "start": 50,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "�ܸ��̵�������״̬_BDU"
+        },
+        {
+          "name": "BDU_BatWatCoolRlyFltSts",
+          "start": 54,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "���ˮ��̵�������״̬_BDU"
+        },
+        {
+          "name": "BDU_SchgRlyFltSts",
+          "start": 58,
+          "length": 2,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 3,
+          "unit": "����̵�������״̬_BDU"
+        }
+      ],
+      "ecu_short": "BDU",
+      "display": "BDU (电池配电单元)",
+      "dict_key": "BDU",
+      "msg_name": "BDU_RlySts"
+    },
+    "418530119": {
+      "type": "bit_faults",
+      "fault_sigs": [
+        {
+          "name": "Communication_Failure",
+          "start": 0,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "TMCU��VCU��CANͨѶ����"
+        },
+        {
+          "name": "OverCurrent_Failure",
+          "start": 3,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ�����������"
+        },
+        {
+          "name": "IGBT_Failure",
+          "start": 4,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ���IGBT����"
+        },
+        {
+          "name": "Phase_Failure",
+          "start": 5,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ���ȱ�����"
+        },
+        {
+          "name": "Controller_OverTempFailure",
+          "start": 6,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ�������������"
+        },
+        {
+          "name": "Motor_OverTempFailure",
+          "start": 7,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ�������"
+        },
+        {
+          "name": "LowVoltage_Failure",
+          "start": 8,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ�����ѹǷѹ����"
+        },
+        {
+          "name": "Encode_Failure",
+          "start": 9,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ��������������䣩����"
+        },
+        {
+          "name": "MotTempSensorFailure",
+          "start": 10,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ����¶ȴ���������"
+        },
+        {
+          "name": "Hardware_Failure",
+          "start": 11,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ���Ӳ������"
+        },
+        {
+          "name": "Locked_rotor_Fault",
+          "start": 14,
+          "length": 1,
+          "byte_order": "little_endian",
+          "is_signed": false,
+          "scale": 1,
+          "offset": 0,
+          "minimum": 0,
+          "maximum": 1,
+          "unit": "��װ�����ת����"
+        }
+      ],
+      "ecu_short": "TVCU",
+      "display": "TVCU (上装电机控制器)",
+      "dict_key": "TVCU",
+      "msg_name": "TMCU_TX_VCU_4"
+    }
+  },
+  "all_canid_keys": [
+    "402837719",
+    "419304036",
+    "419365379",
+    "419366643",
+    "419367376",
+    "419369219",
+    "419369456",
+    "419369731",
+    "419369968",
+    "419370400",
+    "419370657",
+    "419370665",
+    "419370914",
+    "419373315",
+    "419373552",
+    "419373827",
+    "419374064",
+    "419397884",
+    "419414330"
+  ]
+}

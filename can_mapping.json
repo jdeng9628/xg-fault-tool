@@ -1,0 +1,54 @@
+{
+  "VCU故障码": {
+    "canid": "18FF09D0",
+    "formula": "(BYTE[6]*1)+0"
+  },
+  "驱动电机1故障码_非OTA": {
+    "canid": "18FF1303",
+    "formula": "(BYTE[5]*1)+0"
+  },
+  "驱动电机2故障码_非OTA": {
+    "canid": "18FF2303",
+    "formula": "(BYTE[5]*1)+0"
+  },
+  "TCU故障码": {
+    "canid": "18FF0203",
+    "formula": "(BYTE[6]*1)+0"
+  },
+  "BMS故障码": {
+    "canid": "18FF06F3",
+    "formula": "(BYTE[2]*1)+0"
+  },
+  "DCDC故障码": {
+    "canid": "18FF15A0",
+    "formula": "(BYTE[6]*1)+0"
+  },
+  "EPS故障码": {
+    "canid": "18FF16A1",
+    "formula": "(BYTE[6]*1)+0"
+  },
+  "DESP故障码": {
+    "canid": "18FF16A9",
+    "formula": "(BYTE[7]>>1)&0x3F"
+  },
+  "EAC故障码": {
+    "canid": "18FF17A2",
+    "formula": "(BYTE[6]*1)+0"
+  },
+  "FCU故障码": {
+    "canid": "1802D0D7",
+    "formula": "(BYTE[3]*1)+0"
+  },
+  "TMS故障码": {
+    "canid": "18FFC13A",
+    "formula": "(BYTE[7])&0x3F"
+  },
+  "MCU驱动电机1故障码_OTA": {
+    "canid": "18FF13F0",
+    "formula": "(BYTE[5]*1)+0"
+  },
+  "MCU驱动电机2故障码_OTA": {
+    "canid": "18FF23F0",
+    "formula": "(BYTE[5]*1)+0"
+  }
+}
