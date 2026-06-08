@@ -1,0 +1,90 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Generate keystore
+        run: |
+          keytool -genkey -v \
+            -keystore xg-fault-tool.keystore \
+            -alias xgkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass xg2024666 \
+            -keypass xg2024666 \
+            -dname "CN=XG Fault Tool, OU=Dev, O=XG, L=Shenzhen, ST=Guangdong, C=CN"
+        working-directory: android
+
+      - name: Create gradle signing properties
+        run: |
+          cat >> gradle.properties << 'EOF'
+          keystoreFile=../xg-fault-tool.keystore
+          keystorePassword=xg2024666
+          keyAlias=xgkey
+          keyPassword=xg2024666
+          appVersionCode=${{ github.run_number }}
+          appVersionName=1.${{ github.run_number }}
+          EOF
+        working-directory: android
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build APK
+        run: gradle assembleRelease --no-daemon
+        working-directory: android
+
+      - name: Copy APK
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk xg-fault-tool.apk
+          ls -lh xg-fault-tool.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xg-fault-tool-apk
+          path: xg-fault-tool.apk
+
+      - name: Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "latest-apk"
+          name: "故障码查询 Android APP v${{ github.run_number }}"
+          body: |
+            ## 故障码查询 Android APP
+            
+            微信收到 .asc 文件 → 用本 APP 打开 → 自动解析故障码 ✅
+            
+            **安装方法：**
+            1. 下载 APK 文件
+            2. 允许安装未知来源应用
+            3. 安装后在微信中选择「用其他应用打开」
+            
+            **版本：** ${{ github.run_number }}
+          files: xg-fault-tool.apk
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
